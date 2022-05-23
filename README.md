@@ -1,4 +1,6 @@
-# NFT Marketplace to buy and sell NFT's with custom ERC20 token, users can set fractional royalities and marketplace fee is 2.5%
+# NFT Marketplace to buy and sell NFT's with custom ERC20 token, users can set fractional royalities and marketplace fee is 2.5% 
+
+Development environment used HARDHAT
 
 Contracts deployed to Rinkeby Testnet.
 
