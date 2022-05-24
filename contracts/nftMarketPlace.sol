@@ -29,7 +29,8 @@ contract NFTMarketPlace is ReentrancyGuard {
         IERC721 nftContractAdd;
         uint256 tokenId;
         uint256 price;
-        address payable seller;
+        address payable nftCreator;
+        bool isFirstSale;
         bool isItemSold;
         IERC20 erc20TokenAddress;
         address payable owner;
@@ -123,6 +124,7 @@ contract NFTMarketPlace is ReentrancyGuard {
             tokenId,
             sellingPrice,
             payable(msg.sender),
+            true,
             false,
             erc20tokenAddress,
             payable(address(0)),
@@ -152,7 +154,7 @@ contract NFTMarketPlace is ReentrancyGuard {
             "item doesn't exist"
         );
         require(
-            msg.sender != marketItems[itemId].seller,
+            msg.sender != marketItems[itemId].nftCreator,
             "seller should not be same as buyer"
         );
         require(
@@ -163,21 +165,7 @@ contract NFTMarketPlace is ReentrancyGuard {
             !marketItems[itemId].isItemSold,
             "Item is sold out. Can't purchase."
         );
-        //updating state variables before transfer calls to avoid reenterancy vulnerabilities
-        marketItems[itemId].owner = payable(msg.sender);
-        marketItems[itemId].isItemSold = true;
-        _ItemsSoldOut.increment();
-
-        bool issalePriceTxSuccess = erc20tokenAddress.transferFrom(
-            msg.sender,
-            marketItems[itemId].seller,
-            price
-        );
-        require(
-            issalePriceTxSuccess,
-            "ERC20 token transfer of sale price failed!"
-        );
-
+        //transferring marketpalce fee 
         bool isMarketPalceFeeTxSuccess = erc20tokenAddress.transferFrom(
             msg.sender,
             address(this),
@@ -188,20 +176,45 @@ contract NFTMarketPlace is ReentrancyGuard {
             "ERC20 token transfer of marketplace fee failed!"
         );
 
-        bool isRoyalityTxSuccess = erc20tokenAddress.transferFrom(
-            msg.sender,
-            address(marketItems[itemId].owner),
-            calculateRoyality(totalPrice, marketItems[itemId].royality)
-        );
-        require(
-            isRoyalityTxSuccess,
-            "ERC20 token transfer of royality failed!"
-        );
-
-        IERC721(nftContract).safeTransferFrom(
+        if(marketItems[itemId].isFirstSale == true) {
+            IERC721(nftContract).safeTransferFrom(
             address(this),
             msg.sender,
             tokenId
-        );
+            );
+            bool issalePriceTxSuccess = erc20tokenAddress.transferFrom(
+            msg.sender,
+            marketItems[itemId].nftCreator,
+            price
+            );
+            require(
+            issalePriceTxSuccess,
+            "ERC20 token transfer of sale price failed!"
+            );
+        }
+        else{
+            bool isRoyalityTxSuccess = erc20tokenAddress.transferFrom(
+            msg.sender,
+            address(marketItems[itemId].nftCreator),
+            calculateRoyality(totalPrice, marketItems[itemId].royality)
+            );
+            require(
+            isRoyalityTxSuccess,
+            "ERC20 token transfer of royality failed!"
+            );
+            bool issalePriceTxSuccess = erc20tokenAddress.transferFrom(
+            msg.sender,
+            marketItems[itemId].owner,
+            price
+            );
+            require(
+            issalePriceTxSuccess,
+            "ERC20 token transfer of sale price failed!"
+            );
+        } 
+        marketItems[itemId].owner = payable(msg.sender);
+        marketItems[itemId].isFirstSale = false;
+        marketItems[itemId].isItemSold = true;
+        _ItemsSoldOut.increment();
     }
 }
