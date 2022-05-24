@@ -4,8 +4,8 @@ Development environment used HARDHAT
 
 Contracts deployed to Rinkeby Testnet.
 
-ERC 20 contract - https://rinkeby.etherscan.io/address/0xa49eaAc7Eb6e4EeD0631e8061272833B746a8a0b
+ERC 20 contract - https://rinkeby.etherscan.io/address/0x1Cfe352430E2317Ff935b2ABbeC0928E4a7D7a87
 
-Marketplace contract - https://rinkeby.etherscan.io/address/0xC5F84Af205d9d319Af6854A422BAa55bA5D56f28
+Marketplace contract - https://rinkeby.etherscan.io/address/0xf3e10f58B4C46D1F140Db360F3CAf6DFc814BF59
 
-NFT contract - https://rinkeby.etherscan.io/address/0x6d7b4280f2e1dBaD3EBD56f1c17216Ce6147a395
+NFT contract - https://rinkeby.etherscan.io/address/0xd1b8168181D1491E6E1aE49C3beA0D5EcDFC8Ecd
